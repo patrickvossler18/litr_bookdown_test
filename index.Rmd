@@ -10,8 +10,9 @@ params:
   package_parent_dir: "." # <-- relative to this file's location
 documentclass: book
 ---
-test
 # Introduction
+
+test
 
 You can introduce what your R package does here.
 
