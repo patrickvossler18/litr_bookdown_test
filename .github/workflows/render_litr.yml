@@ -43,14 +43,14 @@ jobs:
         run: |
           IS_BOOKDOWN=0
           # find doesn't allow capture groups so we'll have to separate searches
-          SEARCH_INDEX=($(find . -maxdepth 1 -type f  -regex '.*index\.[Rr][Mm][Dd]' -exec basename {} \;))
-          echo "$SEARCH_INDEX"
-          # if SEARCH_INDEX is not an empty string
-          if [ -n  "$SEARCH_INDEX" ]; then
+          SEARCH_FOR_INDEX=($(find . -maxdepth 1 -type f  -regex '.*index\.[Rr][Mm][Dd]' -exec basename {} \;))
+          echo "$SEARCH_FOR_INDEX"
+          # if SEARCH_FOR_INDEX is not an empty string
+          if [[ -n  "$SEARCH_FOR_INDEX" ]]; then
             # if the file name is "index" then we need to look for the package name elsewhere
             # we will look for the *-package.R file and get the package name
             IS_BOOKDOWN=1
-            TOP_LEVEL_RMD=$(echo "$SEARCH_INDEX")
+            TOP_LEVEL_RMD=$(echo "$SEARCH_FOR_INDEX")
             RMD_FILENAME=($(find . -type f -regex '.*-package\.R' -exec basename {} \;))
             PKG_NAME=$(echo "$RMD_FILENAME" | cut -d- -f1 )
           else
@@ -77,6 +77,8 @@ jobs:
           echo "$RMD_PATH"
           echo "${{ env.RMD_PATH }}"
           echo "${{ env.IS_BOOKDOWN }}"
+          echo "$IS_BOOKDOWN"
+          echo "${{ env }}"
           Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) litr::render(f)' ${RMD_PATH[*]}
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
