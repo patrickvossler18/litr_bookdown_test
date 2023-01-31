@@ -82,7 +82,7 @@ jobs:
           Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) litr::render(f)' ${RMD_PATH[*]}
           
       - name: Run tests on the knitted package 
-        run: Rscript -e 'args = commandArgs(TRUE); pkg_path = paste0(args[1], "/"); print(pkg_path); testthat::test_dir(pkg_path)' ${PKG_NAME}
+        run: Rscript -e 'args = commandArgs(TRUE); pkg_path = paste0(args[1], "/"); print(pkg_path); devtools::test(pkg_path)' ${PKG_NAME}
 
       - name: Commit Results
         run: |
