@@ -72,7 +72,7 @@ jobs:
           echo "PKG_NAME=$PKG_NAME" >> $GITHUB_ENV
           echo "TOP_LEVEL_RMD=$TOP_LEVEL_RMD" >> $GITHUB_ENV
           echo "IS_BOOKDOWN=$IS_BOOKDOWN" >> $GITHUB_ENV
-      - name: Render Rmarkdown files and Commit Results
+      - name: Render Rmarkdown files and Generate Package 
         run: |
           echo "$RMD_PATH"
           echo "${{ env.RMD_PATH }}"
@@ -80,6 +80,12 @@ jobs:
           echo "$IS_BOOKDOWN"
           echo "${{ env }}"
           Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) litr::render(f)' ${RMD_PATH[*]}
+          
+      - name: Run tests on the knitted package 
+        run: Rscript -e 'testthat::test_dir(commandArgs(TRUE))' ${PKG_NAME}
+
+      - name: Commit Results
+        run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           if [[ $IS_BOOKDOWN = true ]]; then
