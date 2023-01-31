@@ -41,7 +41,7 @@ jobs:
         shell: Rscript {0}
       - name: Set environment variables
         run: |
-          IS_BOOKDOWN=0
+          IS_BOOKDOWN=false
           # find doesn't allow capture groups so we'll have to separate searches
           SEARCH_FOR_INDEX=($(find . -maxdepth 1 -type f  -regex '.*index\.[Rr][Mm][Dd]' -exec basename {} \;))
           echo "$SEARCH_FOR_INDEX"
@@ -49,7 +49,7 @@ jobs:
           if [[ -n  "$SEARCH_FOR_INDEX" ]]; then
             # if the file name is "index" then we need to look for the package name elsewhere
             # we will look for the *-package.R file and get the package name
-            IS_BOOKDOWN=1
+            IS_BOOKDOWN=true
             TOP_LEVEL_RMD=$(echo "$SEARCH_FOR_INDEX")
             RMD_FILENAME=($(find . -type f -regex '.*-package\.R' -exec basename {} \;))
             PKG_NAME=$(echo "$RMD_FILENAME" | cut -d- -f1 )
@@ -82,7 +82,7 @@ jobs:
           Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) litr::render(f)' ${RMD_PATH[*]}
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          if [[ $IS_BOOKDOWN == 1 ]]; then
+          if [[ $IS_BOOKDOWN = true ]]; then
             git add ${PKG_NAME}/ _book/ 
           else
             git add ${RMD_FILENAME}.html ${PKG_NAME}/
