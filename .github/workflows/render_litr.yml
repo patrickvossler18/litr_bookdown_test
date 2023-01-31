@@ -74,6 +74,9 @@ jobs:
           echo "$IS_BOOKDOWN=$IS_BOOKDOWN" >> $GITHUB_ENV
       - name: Render Rmarkdown files and Commit Results
         run: |
+          echo "$RMD_PATH"
+          echo "${{ env.RMD_PATH }}"
+          echo "${{ env.IS_BOOKDOWN }}"
           Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) litr::render(f)' ${RMD_PATH[*]}
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
