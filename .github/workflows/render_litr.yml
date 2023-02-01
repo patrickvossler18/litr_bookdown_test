@@ -70,6 +70,7 @@ jobs:
           if [[ $IS_BOOKDOWN = true ]]; then
             RMD_FILENAME=($(find . -type f -regex '.*-package\.R' -exec basename {} \;))
             PKG_NAME=$(echo "$RMD_FILENAME" | cut -d- -f1 )
+            echo "PKG_NAME=$PKG_NAME" >> $GITHUB_ENV
           fi
           Rscript -e 'args = commandArgs(TRUE); pkg_path = paste0(args[1], "/"); devtools::test(pkg_path)' ${PKG_NAME}
 
