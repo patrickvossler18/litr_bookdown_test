@@ -45,8 +45,6 @@ jobs:
             # we will look for the *-package.R file and get the package name
             IS_BOOKDOWN=true
             TOP_LEVEL_RMD=$(echo "$SEARCH_FOR_INDEX")
-            RMD_FILENAME=($(find . -type f -regex '.*-package\.R' -exec basename {} \;))
-            PKG_NAME=$(echo "$RMD_FILENAME" | cut -d- -f1 )
           else
             TOP_LEVEL_RMD=($(find . -maxdepth 1 -type f  -regex '.*create-.*\.[Rr][Mm][Dd]' -exec basename {} \;))
             RMD_FILENAME=${TOP_LEVEL_RMD/.*/}
@@ -67,7 +65,13 @@ jobs:
           Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) litr::render(f)' ${RMD_PATH[*]}
           
       - name: Run tests on the knitted package 
-        run: Rscript -e 'args = commandArgs(TRUE); pkg_path = paste0(args[1], "/"); devtools::test(pkg_path)' ${PKG_NAME}
+        run: |
+          # For bookdown, get the package name after everything has been rendered
+          if [[ $IS_BOOKDOWN = true ]]; then
+            RMD_FILENAME=($(find . -type f -regex '.*-package\.R' -exec basename {} \;))
+            PKG_NAME=$(echo "$RMD_FILENAME" | cut -d- -f1 )
+          fi
+          Rscript -e 'args = commandArgs(TRUE); pkg_path = paste0(args[1], "/"); devtools::test(pkg_path)' ${PKG_NAME}
 
       - name: Commit Results
         run: |
